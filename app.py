@@ -149,7 +149,7 @@ def listar_bibliotecarios():
         cursor = conexao.cursor(dictionary=True)
 
 
-        cursor.execute("SELECT * FROM bibliotecario")
+        cursor.execute("SELECT * FROM bibliotecarios")
         bibliotecarios = cursor.fetchall()
 
 
@@ -185,7 +185,7 @@ def cadastrar_bibliotecario():
 
 
         sql = """
-            INSERT INTO bibliotecario (nome, email)
+            INSERT INTO bibliotecarios (nome, email)
             VALUES (%s, %s)
         """
 
