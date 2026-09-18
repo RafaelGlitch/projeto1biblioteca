@@ -1,9 +1,8 @@
-DROP USER 'biblioteca_user1'@'localhost';
-		
 create database biblioteca_1ano;
 
 use biblioteca_1ano;
-
+ 
+ 
 CREATE USER 'biblioteca_user1'@'localhost' IDENTIFIED BY 'projeto1';
 
 GRANT ALL PRIVILEGES
@@ -19,50 +18,49 @@ SELECT user FROM mysql.user;
 create table aluno (
 id_aluno int auto_increment primary key,
 nome varchar(100) not null,
-serie varchar(20) not null,
+serie varchar (20) not null,
 turma varchar(20) not null,
-telefone varchar(20) not null);
+telefone varchar (20) not null);
 
 insert into aluno (id_aluno, nome, serie, turma, telefone) values
-('1','Erick Leiss','B','1','6767-6789'),
-('2','Johua','B','1','5555-8888'),
-('3','Rafael','B','1','4343-5452'),
-('4','Letícia','B','1','6969-8989'),
-('5','João Peddro','B','1','2327-6454'),
-('6','Eduardo','B','1','5463-6473');
+('1','Erick Leiss', '1 ano', 'B', '(44) 9 3894-9476'),
+('2','Johua', '1ano', 'B', '(44) 9 0324-2384'),
+('3','Rafael', '1ano','B', '(44) 9 0289-1029'),
+('4','Letícia', '1ano', 'B', '(44) 9 9320-8932'),
+('5','João Peddro', '1ano', 'B', '(44) 9 3946-73201'),
+('6','Eduardo', '1ano', 'B', '(44) 9 29364-472');
 
 select * from aluno;
 
-create table livros (
-id_livro int auto_increment primary key,
-titulo varchar(150) not null,
-autor varchar(100) not null,
-editora varchar(100) not null,
-ano_publicacao int not null,
-quantidade int not null);
+create table livro (
+  id_livro int auto_increment primary key,
+  titulo varchar(150) not null,
+  categoria varchar(100) not null,
+  autor varchar(100) not null,
+  status varchar(100) not null
+);
 
-insert into livros (id_livro,titulo,autor,editora,ano_publicacao,quantidade) value
-('1','Maus','Arnold Schwarzenegger','Panami','1945','67'),
-('2','67 Teory','Godenot','Copel','2026','69'),
-('3','50 Ton d Amarelo','Raluca','Anvisa','1980','42'),
-('4','Jogo Rurais','Celit','Naike','2020','8'),
-('5','Chetoos','Adam Sandler','IBAMA','1999','69'),
-('6','Pokemon','Nikolas Tesla','ANVISA','2000','35');
+insert into livro (id_livro,titulo, categoria, autor,status) value
+('1','Maus', 'romance','Arnold Schwarzenegger','disponivel'),
+('2','67 Teory', 'acao','Godenot','disponovel'),
+('3','50 Ton d Amarelo', 'aura','Raluca','disponivel'), 
+('4','Jogo Rurais', 'dora','Celit','disponvel'),
+('5','Chetoos', '67','Adam Sandler','disponivel'),
+('6','Pokemon', 'aiia','Nikolas Tesla','disponivel');
 
-select * from livros;
+select * from livro;
 
-create table bibliotecario (
+create table bibliotecarios (
 id_bibliotecario int auto_increment primary key,
 nome varchar(100) not null,
-telefone varchar(20) not null,
 email varchar(100) not null);
 
-insert into bibliotecario (id_bibliotecario,nome,telefone,email) value
-('1','Jessica','4491245678','jessica3@gmail.com'),
-('2','Telma','44912345678','telma2@gmail.com'),
-('3','Tania','44912345678','tania7@gmil.com');
+insert into bibliotecarios (id_bibliotecario,nome,email) value
+('1','Jessica','jessica3@gmail.com'),
+('2','Telma','telma2@gmail.com'),
+('3','Tania','tania7@gmil.com');
 
-select * from bibliotecario;
+select * from bibliotecarios;
 
 create table professor (
 id_professor int auto_increment primary key,
@@ -90,7 +88,7 @@ id_professor int,
 foreign key (id_aluno)
 references	aluno(id_aluno),
 foreign key (id_bibliotecario)
-references	bibliotecario(id_bibliotecario),
+references	bibliotecarios(id_bibliotecario),
 foreign key (id_professor)
 references	professor(id_professor)
 );
@@ -125,9 +123,9 @@ status_emprestimo varchar(20),
 foreign key (id_aluno)
 references	aluno(id_aluno),
 foreign key (id_bibliotecario)
-references	bibliotecario(id_bibliotecario),
+references	bibliotecarios(id_bibliotecario),
 foreign key (id_livro)
-references livros(id_livro),
+references livro(id_livro),
 foreign key (id_professor)
 references	professor(id_professor)
 );
@@ -142,6 +140,3 @@ data_emprestimo,data_prevista_devolucao,data_devolucao,status_emprestimo) values
 (6, 6, 1, 6, 1, '2026-05-13', '2026-05-20', '2026-05-15', 'entregue');
 
 select * from emprestimo;
-
-
-

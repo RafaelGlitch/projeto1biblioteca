@@ -14,6 +14,8 @@ def conectar():
 def index():
     return render_template("index.html")
 
+
+
 # Rotas para alunos
 @app.route("/alunos")
 def listar_alunos():
