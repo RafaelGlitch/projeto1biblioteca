@@ -80,11 +80,15 @@ label {
 
 
 input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    margin-bottom: 12px;
-    border: 1px solid #aaa;
+    input,
+    select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 4px;
+        margin-bottom: 12px;
+        border: 1px solid #aaa;
+    }
+    
 }
 
 
