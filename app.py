@@ -43,61 +43,6 @@ def listar_alunos():
 def formulario_aluno():
     return render_template("aluno_form.html")
 
-# Rota para devolução de livro
-@app.route("/emprestimos/devolver/<int:id_emprestimo>")
-def devolver_livro(id_emprestimo):
-
-
-    try:
-        conexao = conectar()
-        cursor = conexao.cursor(dictionary=True)
-
-
-        cursor.execute("""
-            SELECT id_livro
-            FROM emprestimo
-            WHERE id_emprestimo = %s
-        """, (id_emprestimo,))
-
-
-        emprestimo = cursor.fetchone()
-
-
-        if emprestimo:
-
-
-            id_livro = emprestimo["id_livro"]
-
-
-            cursor.execute("""
-                UPDATE emprestimo
-                SET
-                    data_devolucao = CURDATE(),
-                    status = 'Devolvido'
-                WHERE id_emprestimo = %s
-            """, (id_emprestimo,))
-
-
-            cursor.execute("""
-                UPDATE livro
-                SET status = 'Disponível'
-                WHERE id_livro = %s
-            """, (id_livro,))
-
-
-            conexao.commit()
-
-
-        cursor.close()
-        conexao.close()
-
-
-        return redirect("/emprestimos")
-
-
-    except Exception as erro:
-        return f"Erro ao devolver livro: {erro}"
-
 
 @app.route("/alunos/cadastrar", methods=["POST"])
 def cadastrar_aluno():
@@ -281,7 +226,7 @@ def listar_emprestimos():
                 e.data_emprestimo,
                 e.data_prevista_devolucao,
                 e.data_devolucao,
-                e.status
+                e.status_emprestimo
             FROM emprestimo e
             INNER JOIN aluno a ON e.id_aluno = a.id_aluno
             INNER JOIN livro l ON e.id_livro = l.id_livro
@@ -365,7 +310,7 @@ def cadastrar_emprestimo():
                 id_bibliotecario,
                 data_emprestimo,
                 data_prevista_devolucao,
-                status
+                status_emprestimo
             )
             VALUES (%s, %s, %s, %s, %s, %s)
         """
@@ -403,7 +348,60 @@ def cadastrar_emprestimo():
     except Exception as erro:
         return f"Erro ao cadastrar empréstimo: {erro}"
 
+# Rota para devolução de livro
+@app.route("/emprestimos/devolver/<int:id_emprestimo>")
+def devolver_livro(id_emprestimo):
 
+
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor(dictionary=True)
+
+
+        cursor.execute("""
+            SELECT id_livro
+            FROM emprestimo
+            WHERE id_emprestimo = %s
+        """, (id_emprestimo,))
+
+
+        emprestimo = cursor.fetchone()
+
+
+        if emprestimo:
+
+
+            id_livro = emprestimo["id_livro"]
+
+
+            cursor.execute("""
+                UPDATE emprestimo
+                SET
+                    data_devolucao = CURDATE(),
+                    status_emprestimo = 'Devolvido'
+                WHERE id_emprestimo = %s
+            """, (id_emprestimo,))
+
+
+            cursor.execute("""
+                UPDATE livro
+                SET status = 'Disponível'
+                WHERE id_livro = %s
+            """, (id_livro,))
+
+
+            conexao.commit()
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return redirect("/emprestimos")
+
+
+    except Exception as erro:
+        return f"Erro ao devolver livro: {erro}"
 
 if __name__ == "__main__":
     app.run(debug=True)
