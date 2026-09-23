@@ -36,7 +36,7 @@
     <select name="id_bibliotecario" required>
         <option value="">Selecione o bibliotecário</option>
         {% for bibliotecario in bibliotecarios %}
-        <option value="{{ bibliotecarios.id_bibliotecario }}">
+        <option value="{{ bibliotecario.id_bibliotecario }}">
             {{ bibliotecario.nome }}
         </option>
         {% endfor %}
