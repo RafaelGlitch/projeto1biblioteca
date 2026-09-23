@@ -1,16 +1,12 @@
 {% extends "base.html" %}
 
-
 {% block conteudo %}
 
-
 <h2>Empréstimos Cadastrados</h2>
-
 
 <p>
     <a href="/emprestimos/novo">Registrar novo empréstimo</a>
 </p>
-
 
 <table>
     <thead>
@@ -23,9 +19,9 @@
             <th>Previsão Devolução</th>
             <th>Data Devolução</th>
             <th>Status</th>
+            <th>Ações</th> <!-- Nova coluna -->
         </tr>
     </thead>
-
 
     <tbody>
         {% for emprestimo in emprestimos %}
@@ -33,15 +29,25 @@
             <td>{{ emprestimo.id_emprestimo }}</td>
             <td>{{ emprestimo.aluno }}</td>
             <td>{{ emprestimo.livro }}</td>
-            <td>{{ emprestimo.bibliotecarios }}</td>
+            <td>{{ emprestimo.bibliotecarios }}</td> <!-- Ajustado para plural (b.nome AS bibliotecarios) -->
             <td>{{ emprestimo.data_emprestimo }}</td>
             <td>{{ emprestimo.data_prevista_devolucao }}</td>
             <td>{{ emprestimo.data_devolucao }}</td>
-            <td>{{ emprestimo.status_emprestimo }}</td>
+            <td>{{ emprestimo.status_emprestimo }}</td> <!-- Ajustado para o nome correto do banco -->
+
+            <td>
+                <!-- Ajustado para ler o status correto do seu banco -->
+                {% if emprestimo.status_emprestimo == 'Emprestado' %}
+                <a href="/emprestimos/devolver/{{ emprestimo.id_emprestimo }}">
+                    Devolver
+                </a>
+                {% else %}
+                Devolvido
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
 
 {% endblock %}
