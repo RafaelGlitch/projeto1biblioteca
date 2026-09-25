@@ -50,17 +50,17 @@ insert into livro (id_livro,titulo, categoria, autor,status) value
 
 select * from livro;
 
-create table bibliotecarios (
+create table bibliotecario (
 id_bibliotecario int auto_increment primary key,
 nome varchar(100) not null,
 email varchar(100) not null);
 
-insert into bibliotecarios (id_bibliotecario,nome,email) value
+insert into bibliotecario (id_bibliotecario,nome,email) value
 ('1','Jessica','jessica3@gmail.com'),
 ('2','Telma','telma2@gmail.com'),
 ('3','Tania','tania7@gmil.com');
 
-select * from bibliotecarios;
+select * from bibliotecario;
 
 create table professor (
 id_professor int auto_increment primary key,
@@ -118,7 +118,7 @@ id_livro int,
 id_professor int,
 data_emprestimo date not null,
 data_prevista_devolucao date not null,
-data_devolucao date not null,
+data_devolucao date ,
 status_emprestimo varchar(20),
 foreign key (id_aluno)
 references	aluno(id_aluno),
@@ -136,7 +136,7 @@ data_emprestimo,data_prevista_devolucao,data_devolucao,status_emprestimo) values
 (2, 2, 1, 2, 1, '2026-06-20', '2026-06-22', '2026-06-26', 'atrasado'),
 (3, 3, 1, 3, 1, '2026-06-04', '2026-06-20', '2026-06-19', 'entregue'),
 (4, 4, 1, 5, 1, '2026-04-01', '2026-04-10', '2026-04-06', 'entregue'),
-(5, 5, 1, 4, 1, '2026-06-09', '2026-06-16', '2026-06-19', 'entregue'),
+(5, 5, 1, 4, 1, '2026-06-09', '2026-06-16', '2026-06-19', 'entregue'),	
 (6, 6, 1, 6, 1, '2026-05-13', '2026-05-20', '2026-05-15', 'entregue');
 
 select * from emprestimo;

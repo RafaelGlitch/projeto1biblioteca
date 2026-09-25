@@ -434,7 +434,7 @@ def listar_bibliotecarios():
         cursor = conexao.cursor(dictionary=True)
 
 
-        cursor.execute("SELECT * FROM bibliotecarios")
+        cursor.execute("SELECT * FROM bibliotecario")
         bibliotecarios = cursor.fetchall()
 
 
