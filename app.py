@@ -1,10 +1,10 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 import mysql.connector
 from config import DB_CONFIG
 
 
 app = Flask(__name__)
-
+app.secret_key = "biblioteca_escolar"
 
 def conectar():
     return mysql.connector.connect(**DB_CONFIG)
@@ -47,26 +47,34 @@ def cadastrar_aluno():
         turma = request.form["turma"]
         telefone = request.form["telefone"]
 
+
         conexao = conectar()
         cursor = conexao.cursor()
+
 
         sql = """
             INSERT INTO aluno (nome, serie, turma, telefone)
             VALUES (%s, %s, %s, %s)
         """
 
+
         valores = (nome, serie, turma, telefone)
+
 
         cursor.execute(sql, valores)
         conexao.commit()
-
+       
         cursor.close()
         conexao.close()
-
+       
+        #ACRESCENTE A MENSAGEM DE SUCESSO AO CADASTRAR O ALUNO
+        flash("Aluno cadastrado com sucesso!", "sucesso")
         return redirect("/alunos")
 
+
     except Exception as erro:
-        return f"Erro ao cadastrar aluno: {erro}"
+        flash(f"Erro ao cadastrar aluno: {erro}", "erro")
+        return redirect("/alunos")
 
 
 # Rota CRUD aluno
@@ -132,20 +140,27 @@ def excluir_aluno(id_aluno):
         conexao = conectar()
         cursor = conexao.cursor()
 
+
         cursor.execute(
             "DELETE FROM aluno WHERE id_aluno = %s",
             (id_aluno,)
         )
 
+
         conexao.commit()
+
 
         cursor.close()
         conexao.close()
 
+
+        flash("Aluno excluído com sucesso!", "sucesso")
         return redirect("/alunos")
 
+
     except Exception as erro:
-        return f"Erro ao excluir aluno: {erro}"
+        flash("Não foi possível excluir o aluno. Verifique se ele possui empréstimos cadastrados.", "erro")
+        return redirect("/alunos")
 
 
 # Rotas para livros
