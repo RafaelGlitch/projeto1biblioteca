@@ -55,12 +55,12 @@ id_bibliotecario int auto_increment primary key,
 nome varchar(100) not null,
 email varchar(100) not null);
 
-insert into bibliotecario (id_bibliotecario,nome,email) value
+insert into bibliotecarios (id_bibliotecario,nome,email) value
 ('1','Jessica','jessica3@gmail.com'),
 ('2','Telma','telma2@gmail.com'),
 ('3','Tania','tania7@gmil.com');
 
-select * from bibliotecario;
+select * from bibliotecarios;
 
 create table professor (
 id_professor int auto_increment primary key,
@@ -77,17 +77,20 @@ insert into professor (id_professor,nome,telefone,email) values
 select * from professor;
 
 create table usuario(
-  id_usuario int auto_increment primary key,
-  nome varchar(100) not null,
-  email varchar(100) not null,
-  senha varchar(100) not null,
-  perfil varchar(20) not null,
-  id_aluno int,
-  id_bibliotecario int,
-  id_professor int,
-  foreign key (id_aluno) references aluno(id_aluno),
-  foreign key (id_bibliotecario) references bibliotecario(id_bibliotecario),
-  foreign key (id_professor) references professor(id_professor)
+id_usuario int auto_increment primary key,
+nome varchar(100) not null,
+email varchar(100) not null,
+senha varchar(100) not null,
+perfil varchar(20) not null,
+id_aluno int,
+id_bibliotecario int,
+id_professor int,
+foreign key (id_aluno)
+references	aluno(id_aluno),
+foreign key (id_bibliotecario)
+references	bibliotecarios(id_bibliotecario),
+foreign key (id_professor)
+references	professor(id_professor)
 );
 
 insert into usuario (id_usuario,nome,email,senha,perfil,id_aluno,id_bibliotecario,id_professor) values
@@ -108,19 +111,23 @@ insert into usuario (id_usuario,nome,email,senha,perfil,id_aluno,id_bibliotecari
 select * from usuario;
 
 create table emprestimo (
-  id_emprestimo int auto_increment primary key,
-  id_aluno int,
-  id_bibliotecario int,
-  id_livro int,
-  id_professor int,
-  data_emprestimo date not null,
-  data_prevista_devolucao date not null,
-  data_devolucao date,
-  status_emprestimo varchar(20),
-  foreign key (id_aluno) references aluno(id_aluno),
-  foreign key (id_bibliotecario) references bibliotecario(id_bibliotecario),
-  foreign key (id_livro) references livro(id_livro),
-  foreign key (id_professor) references professor(id_professor)
+id_emprestimo int auto_increment primary key,
+id_aluno int,
+id_bibliotecario int,
+id_livro int,
+id_professor int,
+data_emprestimo date not null,
+data_prevista_devolucao date not null,
+data_devolucao date not null,
+status_emprestimo varchar(20),
+foreign key (id_aluno)
+references	aluno(id_aluno),
+foreign key (id_bibliotecario)
+references	bibliotecarios(id_bibliotecario),
+foreign key (id_livro)
+references livro(id_livro),
+foreign key (id_professor)
+references	professor(id_professor)
 );
 
 insert into emprestimo (id_emprestimo,id_aluno,id_bibliotecario,id_livro,id_professor,
@@ -129,7 +136,8 @@ data_emprestimo,data_prevista_devolucao,data_devolucao,status_emprestimo) values
 (2, 2, 1, 2, 1, '2026-06-20', '2026-06-22', '2026-06-26', 'atrasado'),
 (3, 3, 1, 3, 1, '2026-06-04', '2026-06-20', '2026-06-19', 'entregue'),
 (4, 4, 1, 5, 1, '2026-04-01', '2026-04-10', '2026-04-06', 'entregue'),
-(5, 5, 1, 4, 1, '2026-06-09', '2026-06-16', '2026-06-19', 'entregue'),	
+(5, 5, 1, 4, 1, '2026-06-09', '2026-06-16', '2026-06-19', 'entregue'),
 (6, 6, 1, 6, 1, '2026-05-13', '2026-05-20', '2026-05-15', 'entregue');
 
 select * from emprestimo;
+
