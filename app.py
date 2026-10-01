@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, flash
 import mysql.connector
 from config import DB_CONFIG
+from datetime import datetime
+
 
 
 app = Flask(__name__)
@@ -48,6 +50,16 @@ def cadastrar_aluno():
         serie = request.form["serie"]
         turma = request.form["turma"]
         telefone = request.form["telefone"]
+
+        if len(nome.strip()) < 3:
+            flash("O nome do aluno deve ter pelo menos 3 caracteres.", "erro")
+            return redirect("/alunos/novo")
+
+
+        if telefone and len(telefone.strip()) < 8:
+            flash("O telefone deve ter pelo menos 8 caracteres.", "erro")
+            return redirect("/alunos/novo")
+
 
         conexao = conectar()
         cursor = conexao.cursor()
@@ -188,6 +200,16 @@ def cadastrar_livro():
         autor = request.form["autor"]
         categoria = request.form["categoria"]
 
+        if len(titulo.strip()) < 2:
+            flash("O título do livro deve ter pelo menos 2 caracteres.", "erro")
+            return redirect("/livros/novo")
+
+
+        if len(autor.strip()) < 3:
+            flash("O nome do autor deve ter pelo menos 3 caracteres.", "erro")
+            return redirect("/livros/novo")
+
+
         conexao = conectar()
         cursor = conexao.cursor()
 
@@ -325,6 +347,16 @@ def cadastrar_bibliotecario():
     try:
         nome = request.form["nome"]
         email = request.form["email"]
+
+        if len(nome.strip()) < 3:
+            flash("O nome do bibliotecário deve ter pelo menos 3 caracteres.", "erro")
+            return redirect("/bibliotecarios/novo")
+
+
+        if "@" not in email or "." not in email:
+            flash("Informe um e-mail válido.", "erro")
+            return redirect("/bibliotecarios/novo")
+
 
         conexao = conectar()
         cursor = conexao.cursor()
@@ -507,8 +539,36 @@ def cadastrar_emprestimo():
         data_emprestimo = request.form["data_emprestimo"]
         data_prevista_devolucao = request.form["data_prevista_devolucao"]
 
+        # Conversão e validação das datas
+        data_emp = datetime.strptime(data_emprestimo, "%Y-%m-%d")
+        data_dev = datetime.strptime(data_prevista_devolucao, "%Y-%m-%d")
+
+        if data_dev < data_emp:
+            flash("A data prevista de devolução não pode ser menor que a data do empréstimo.", "erro")
+            return redirect("/emprestimos/novo")
+
         conexao = conectar()
         cursor = conexao.cursor()
+
+# 2ª Validação (CÓDIGO DA IMAGEM): Verifica a disponibilidade do livro no banco
+        cursor.execute(
+            "SELECT status FROM livro WHERE id_livro = %s",
+            (id_livro,)
+        )
+
+        livro = cursor.fetchone()
+
+        if livro is None:
+            flash("Livro não encontrado.", "erro")
+            cursor.close()
+            conexao.close()
+            return redirect("/emprestimos/novo")
+
+        if livro[0] != "Disponível":
+            flash("Este livro não está disponível para empréstimo.", "erro")
+            cursor.close()
+            conexao.close()
+            return redirect("/emprestimos/novo")
 
         sql = """
             INSERT INTO emprestimo (
