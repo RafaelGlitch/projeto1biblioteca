@@ -14,7 +14,50 @@ def conectar():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor(dictionary=True)
+
+
+        cursor.execute("SELECT COUNT(*) AS total FROM aluno")
+        total_alunos = cursor.fetchone()["total"]
+
+
+        cursor.execute("SELECT COUNT(*) AS total FROM livro")
+        total_livros = cursor.fetchone()["total"]
+
+
+        cursor.execute("SELECT COUNT(*) AS total FROM livro WHERE status = 'Disponível'")
+        total_disponiveis = cursor.fetchone()["total"]
+
+
+        cursor.execute("SELECT COUNT(*) AS total FROM emprestimo WHERE status_emprestimo = 'Emprestado'")
+        total_emprestimos = cursor.fetchone()["total"]
+
+
+        cursor.close()
+        conexao.close()
+
+
+        return render_template(
+            "index.html",
+            total_alunos=total_alunos,
+            total_livros=total_livros,
+            total_disponiveis=total_disponiveis,
+            total_emprestimos=total_emprestimos
+        )
+
+
+    except Exception as erro:
+        flash(f"Erro ao carregar página inicial: {erro}", "erro")
+        return render_template(
+            "index.html",
+            total_alunos=0,
+            total_livros=0,
+            total_disponiveis=0,
+            total_emprestimos=0
+        )
+
 
 
 # ==========================================
@@ -23,19 +66,46 @@ def index():
 @app.route("/alunos")
 def listar_alunos():
     try:
+        pesquisa = request.args.get("pesquisa", "")
+
+
         conexao = conectar()
         cursor = conexao.cursor(dictionary=True)
 
-        cursor.execute("SELECT * FROM aluno")
+
+        if pesquisa:
+            sql = """
+                SELECT * FROM aluno
+                WHERE nome LIKE %s
+                   OR serie LIKE %s
+                   OR turma LIKE %s
+                ORDER BY nome
+            """
+
+
+            valor = f"%{pesquisa}%"
+            cursor.execute(sql, (valor, valor, valor))
+        else:
+            cursor.execute("SELECT * FROM aluno ORDER BY nome")
+
+
         alunos = cursor.fetchall()
+
 
         cursor.close()
         conexao.close()
 
-        return render_template("alunos.html", alunos=alunos)
+
+        return render_template(
+            "alunos.html",
+            alunos=alunos,
+            pesquisa=pesquisa
+        )
+
 
     except Exception as erro:
-        return f"Erro ao listar alunos: {erro}"
+        flash(f"Erro ao listar alunos: {erro}", "erro")
+        return redirect("/")
 
 
 @app.route("/alunos/novo")
@@ -173,19 +243,48 @@ def excluir_aluno(id_aluno):
 @app.route("/livros")
 def listar_livros():
     try:
+        pesquisa = request.args.get("pesquisa", "")
+
+
         conexao = conectar()
         cursor = conexao.cursor(dictionary=True)
 
-        cursor.execute("SELECT * FROM livro")
+
+        if pesquisa:
+            sql = """
+                SELECT * FROM livro
+                WHERE titulo LIKE %s
+                   OR autor LIKE %s
+                   OR categoria LIKE %s
+                   OR status LIKE %s
+                ORDER BY titulo
+            """
+
+
+            valor = f"%{pesquisa}%"
+            cursor.execute(sql, (valor, valor, valor, valor))
+        else:
+            cursor.execute("SELECT * FROM livro ORDER BY titulo")
+
+
         livros = cursor.fetchall()
+
 
         cursor.close()
         conexao.close()
 
-        return render_template("livros.html", livros=livros)
+
+        return render_template(
+            "livros.html",
+            livros=livros,
+            pesquisa=pesquisa
+        )
+
 
     except Exception as erro:
-        return f"Erro ao listar livros: {erro}"
+        flash(f"Erro ao listar livros: {erro}", "erro")
+        return redirect("/")
+
 
 
 @app.route("/livros/novo")
@@ -657,6 +756,51 @@ def devolver_livro(id_emprestimo):
 
     except Exception as erro:
         flash("Erro ao devolver livro.", "erro")
+        return redirect("/emprestimos")
+
+
+
+# ==========================================
+# ROTAS PARA EMPRÉSTIMOS ATRASADOS
+# ==========================================
+@app.route("/emprestimos/atrasados")
+def listar_emprestimos_atrasados():
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor(dictionary=True)
+
+        sql = """
+            SELECT
+                e.id_emprestimo,
+                a.nome AS aluno,
+                l.titulo AS livro,
+                b.nome AS bibliotecario,
+                e.data_emprestimo,
+                e.data_prevista_devolucao,
+                DATEDIFF(CURDATE(), e.data_prevista_devolucao) AS dias_atraso,
+                e.status_emprestimo AS status
+            FROM emprestimo e
+            INNER JOIN aluno a ON e.id_aluno = a.id_aluno
+            INNER JOIN livro l ON e.id_livro = l.id_livro
+            INNER JOIN bibliotecarios b ON e.id_bibliotecario = b.id_bibliotecario
+            WHERE e.status_emprestimo = 'Emprestado'
+              AND e.data_prevista_devolucao < CURDATE()
+            ORDER BY e.data_prevista_devolucao
+        """
+
+        cursor.execute(sql)
+        emprestimos = cursor.fetchall()
+
+        cursor.close()
+        conexao.close()
+
+        return render_template(
+            "emprestimos_atrasados.html",
+            emprestimos=emprestimos
+        )
+
+    except Exception as erro:
+        flash(f"Erro ao listar empréstimos atrasados: {erro}", "erro")
         return redirect("/emprestimos")
 
 
