@@ -4,9 +4,28 @@
 
 <h2>Empréstimos Cadastrados</h2>
 
+<form method="GET" action="/emprestimos">
+    <label>Filtrar por status:</label>
+    <select name="status">
+        <option value="">Todos</option>
+        <option value="Emprestado" {% if status == 'Emprestado' %}selected{% endif %}>
+            Emprestado
+        </option>
+        <option value="Devolvido" {% if status == 'Devolvido' %}selected{% endif %}>
+            Devolvido
+        </option>
+    </select>
+    <button type="submit">Filtrar</button>
+    <a href="/emprestimos">Limpar</a>
+</form>
+
+<br>
+
+{% if session.perfil == 'Administrador' or session.perfil == 'Bibliotecário' %}
 <p>
     <a href="/emprestimos/novo">Registrar novo empréstimo</a>
 </p>
+{% endif %}
 
 <table>
     <thead>
@@ -19,7 +38,7 @@
             <th>Previsão Devolução</th>
             <th>Data Devolução</th>
             <th>Status</th>
-            <th>Ações</th> <!-- Nova coluna -->
+            <th>Ações</th> 
         </tr>
     </thead>
 
@@ -29,20 +48,23 @@
             <td>{{ emprestimo.id_emprestimo }}</td>
             <td>{{ emprestimo.aluno }}</td>
             <td>{{ emprestimo.livro }}</td>
-            <td>{{ emprestimo.bibliotecarios }}</td> <!-- Ajustado para plural (b.nome AS bibliotecarios) -->
+            <td>{{ emprestimo.bibliotecarios }}</td> 
             <td>{{ emprestimo.data_emprestimo }}</td>
             <td>{{ emprestimo.data_prevista_devolucao }}</td>
             <td>{{ emprestimo.data_devolucao }}</td>
-            <td>{{ emprestimo.status_emprestimo }}</td> <!-- Ajustado para o nome correto do banco -->
+            <td>{{ emprestimo.status_emprestimo }}</td> 
 
             <td>
-                <!-- Ajustado para ler o status correto do seu banco -->
                 {% if emprestimo.status_emprestimo == 'Emprestado' %}
-                <a href="/emprestimos/devolver/{{ emprestimo.id_emprestimo }}">
-                    Devolver
-                </a>
+                    {% if session.perfil == 'Administrador' or session.perfil == 'Bibliotecário' %}
+                        <a href="/emprestimos/devolver/{{ emprestimo.id_emprestimo }}">
+                            Devolver
+                        </a>
+                    {% else %}
+                        Emprestado
+                    {% endif %}
                 {% else %}
-                Devolvido
+                    Devolvido
                 {% endif %}
             </td>
         </tr>

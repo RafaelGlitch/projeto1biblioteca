@@ -1,35 +1,23 @@
 {% extends "base.html" %}
 
-
 {% block conteudo %}
-
 
 <h2>Livros Cadastrados</h2>
 
-
+{% if session.perfil == 'Administrador' or session.perfil == 'Bibliotecário' %}
 <p>
     <a href="/livros/novo">Cadastrar novo livro</a>
 </p>
-
+{% endif %}
 
 <form method="GET" action="/livros">
-
-
     <label>Pesquisar livro:</label>
     <input type="text" name="pesquisa" value="{{ pesquisa }}" placeholder="Título, autor, categoria ou status">
-
-
     <button type="submit">Pesquisar</button>
-
-
     <a href="/livros">Limpar</a>
-
-
 </form>
 
-
 <br>
-
 
 <table>
     <thead>
@@ -39,10 +27,11 @@
             <th>Autor</th>
             <th>Categoria</th>
             <th>Status</th>
+            {% if session.perfil == 'Administrador' or session.perfil == 'Bibliotecário' %}
             <th>Ações</th>
+            {% endif %}
         </tr>
     </thead>
-
 
     <tbody>
         {% for livro in livros %}
@@ -52,6 +41,8 @@
             <td>{{ livro.autor }}</td>
             <td>{{ livro.categoria }}</td>
             <td>{{ livro.status }}</td>
+            
+            {% if session.perfil == 'Administrador' or session.perfil == 'Bibliotecário' %}
             <td>
                 <a href="/livros/editar/{{ livro.id_livro }}">Editar</a>
                 |
@@ -60,10 +51,10 @@
                     Excluir
                 </a>
             </td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
 
 {% endblock %}
